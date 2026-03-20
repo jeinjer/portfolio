@@ -121,11 +121,29 @@ function setupLanguageToggle() {
 }
 
 function setupMusicPlayer() {
+  const player = document.getElementById('music-player');
   const volumeSlider = document.getElementById('volume-slider');
   const mobileAudioToggle = document.getElementById('mobile-audio-toggle');
   const mobileAudioIconOn = mobileAudioToggle?.querySelector('.mobile-audio-icon-on');
   const mobileAudioIconOff = mobileAudioToggle?.querySelector('.mobile-audio-icon-off');
+  const playerCollapseBtn = document.getElementById('btn-player-collapse');
+  const playerCollapseIconMin = playerCollapseBtn?.querySelector('.player-collapse-icon-min');
+  const playerCollapseIconExpand = playerCollapseBtn?.querySelector('.player-collapse-icon-expand');
   let lastVolumeBeforeMute = getDefaultVolume();
+
+  const syncPlayerCollapsedState = () => {
+    if (!player || !playerCollapseBtn) return;
+    const isDesktop = window.innerWidth > 1280;
+    const isCollapsed = player.classList.contains('is-collapsed');
+    playerCollapseBtn.classList.toggle('hidden', !isDesktop);
+    playerCollapseBtn.setAttribute('aria-label', isCollapsed ? 'Expandir reproductor' : 'Minimizar reproductor');
+    playerCollapseBtn.setAttribute('title', isCollapsed ? 'Expandir reproductor' : 'Minimizar reproductor');
+    playerCollapseIconMin?.classList.toggle('hidden', isCollapsed);
+    playerCollapseIconExpand?.classList.toggle('hidden', !isCollapsed);
+    if (!isDesktop && isCollapsed) {
+      player.classList.remove('is-collapsed');
+    }
+  };
 
   const updateMobileAudioToggle = (volumeValue) => {
     if (!mobileAudioToggle) return;
@@ -142,6 +160,10 @@ function setupMusicPlayer() {
   }
   setVolume(getDefaultVolume());
   updateMobileAudioToggle(getDefaultVolume());
+  if (player && localStorage.getItem('player-collapsed') === 'true') {
+    player.classList.add('is-collapsed');
+  }
+  syncPlayerCollapsedState();
 
   document.getElementById('btn-play')?.addEventListener('click', () => toggleAudio());
   document.getElementById('btn-next')?.addEventListener('click', () => nextTrack());
@@ -166,6 +188,15 @@ function setupMusicPlayer() {
     setVolume(nextVolume);
     updateMobileAudioToggle(nextVolume);
   });
+
+  playerCollapseBtn?.addEventListener('click', () => {
+    if (!player || window.innerWidth <= 1280) return;
+    player.classList.toggle('is-collapsed');
+    localStorage.setItem('player-collapsed', player.classList.contains('is-collapsed') ? 'true' : 'false');
+    syncPlayerCollapsedState();
+  });
+
+  window.addEventListener('resize', syncPlayerCollapsedState);
 
   const trackSlider = document.getElementById('track-slider');
   if (trackSlider) {
@@ -240,7 +271,7 @@ function setupResponsiveMusicPlayerPlacement() {
   player.parentNode?.insertBefore(placeholder, player);
 
   const syncPlacement = () => {
-    const isMobile = window.innerWidth <= 768;
+    const isMobile = window.innerWidth <= 1280;
     if (isMobile && player.parentElement !== navLinks) {
       navLinks.appendChild(player);
     } else if (!isMobile && player.parentNode !== placeholder.parentNode) {

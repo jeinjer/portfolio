@@ -57,9 +57,15 @@
   
   <div id="music-player">
     <div class="player-main">
-      <div class="player-display">
-        <span class="player-status" id="player-status">LOFI RADIO</span>
-        <span class="player-track" id="player-track" data-i18n="player.idle">Sin reproducir</span>
+      <div class="player-topbar">
+        <div class="player-display">
+          <span class="player-status" id="player-status">LOFI RADIO</span>
+          <span class="player-track" id="player-track" data-i18n="player.idle">Sin reproducir</span>
+        </div>
+        <button class="player-collapse-btn" id="btn-player-collapse" type="button" aria-label="Minimizar reproductor" title="Minimizar reproductor">
+          <svg class="player-collapse-icon player-collapse-icon-min" viewBox="0 0 24 24" width="14" height="14" fill="currentColor" aria-hidden="true"><path d="M5 11h14v2H5z"/></svg>
+          <svg class="player-collapse-icon player-collapse-icon-expand hidden" viewBox="0 0 24 24" width="14" height="14" fill="currentColor" aria-hidden="true"><path d="M19 11h-6V5h-2v6H5v2h6v6h2v-6h6z"/></svg>
+        </button>
       </div>
       <div class="player-controls">
         <button class="player-btn" id="btn-prev" title="Previous">⏮</button>
